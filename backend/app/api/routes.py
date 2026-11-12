@@ -1,16 +1,20 @@
 from fastapi import APIRouter
 
-from app.schemas import ChatRequest, ChatResponse
-from app.services.bot import generate_reply
+from app.config import settings
+from app.schemas import ConsultaRequest, ConsultaResponse, SaludResponse
+from app.services.rag import consultar
 
 router = APIRouter()
 
 
-@router.get("/health")
-def health() -> dict[str, str]:
-    return {"status": "ok"}
+@router.get("/salud", response_model=SaludResponse)
+@router.get("/health", response_model=SaludResponse, include_in_schema=False)
+def salud() -> SaludResponse:
+    return SaludResponse(estado="ok")
 
 
-@router.post("/chat", response_model=ChatResponse)
-def chat(payload: ChatRequest) -> ChatResponse:
-    return ChatResponse(reply=generate_reply(payload.message))
+@router.post("/consultas", response_model=ConsultaResponse)
+def consultas(payload: ConsultaRequest) -> ConsultaResponse:
+    # Valida (Pydantic) -> recupera (ChromaDB) -> devuelve el contrato acordado.
+    resultado = consultar(payload.pregunta, settings.corpus_path)
+    return ConsultaResponse(**resultado)

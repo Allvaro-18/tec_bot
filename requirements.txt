@@ -1,0 +1,5 @@
+# Instala todo desde la raíz del proyecto:  pip install -r requirements.txt
+-r backend/requirements-dev.txt
+
+# Generación de respuestas con modelo local (Día 3 · Paso 4).
+ollama>=0.4

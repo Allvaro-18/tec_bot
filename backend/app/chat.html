@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TecBot Académico - Asistente Inteligente</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-color: #030712;
+      --surface-color: #111827;
+      --surface-2: #0b1220;
+      --primary-accent: #06b6d4;
+      --success-accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #f87171;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border-color: #1f2937;
+      --font-sans: 'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      background-color: var(--surface-color);
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .brand-logo { height: 40px; width: auto; display: block; }
+    .nav-links { display: flex; gap: 20px; }
+    .nav-links a {
+      text-decoration: none;
+      color: var(--text-muted);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--primary-accent); }
+
+    .cta-button, .btn-primary, .btn-enviar {
+      background-color: var(--primary-accent);
+      color: #030712;
+      font-weight: 600;
+      border-radius: 6px;
+      text-decoration: none;
+      border: 0;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .cta-button { padding: 0.5rem 1rem; }
+    .btn-primary { padding: 0.75rem 1.5rem; display: inline-block; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 4.5rem 2rem 3rem;
+    }
+    .hero h1 {
+      font-size: 2.75rem;
+      margin: 0 0 1rem;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+    .hero h1 span { color: var(--success-accent); }
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 2rem;
+    }
+
+    /* Chat */
+    .chat {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 0 1.5rem 3rem;
+      scroll-margin-top: 90px;
+    }
+    .chat-card {
+      background: var(--surface-color);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+    .chat-card h2 { margin: 0 0 0.75rem; font-size: 1.35rem; }
+    .aviso {
+      margin: 0 0 1rem;
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fcd34d;
+      border-radius: 8px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.88rem;
+    }
+    form { display: flex; gap: 0.5rem; }
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 0.75rem 0.9rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--surface-2);
+      color: var(--text-main);
+      font-size: 1rem;
+      font-family: inherit;
+    }
+    input::placeholder { color: #6b7280; }
+    input:focus { outline: 2px solid var(--primary-accent); border-color: transparent; }
+    .btn-enviar { padding: 0.75rem 1.2rem; font-size: 1rem; }
+    .btn-enviar:disabled { opacity: 0.6; cursor: wait; }
+
+    .ejemplos { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.75rem; }
+    .ejemplos button {
+      background: transparent;
+      color: var(--text-muted);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.82rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .ejemplos button:hover { color: var(--primary-accent); border-color: var(--primary-accent); }
+
+    .estado { color: var(--text-muted); margin: 1rem 0 0; }
+    .error { color: var(--danger); margin: 1rem 0 0; }
+
+    .resultado {
+      margin-top: 1.25rem;
+      background: var(--surface-2);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--success-accent);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+    }
+    .resultado.sin-fuentes { border-left-color: var(--warning); }
+    .respuesta { white-space: pre-line; line-height: 1.6; margin: 0; }
+    .respuesta strong { color: #fff; }
+    .cita {
+      display: inline-block;
+      font-size: 0.75rem;
+      color: var(--primary-accent);
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: 4px;
+      padding: 0 0.35rem;
+    }
+    .resultado h3 { font-size: 0.95rem; margin: 1.1rem 0 0.4rem; color: var(--text-muted); }
+    .resultado ul { margin: 0; padding-left: 1.1rem; }
+    summary { cursor: pointer; color: var(--primary-accent); font-weight: 600; }
+    .fragmento {
+      white-space: pre-wrap;
+      font-size: 0.83rem;
+      color: var(--text-muted);
+      background: var(--bg-color);
+      border-radius: 6px;
+      padding: 0.6rem;
+    }
+    .advertencia { font-size: 0.78rem; color: #6b7280; margin: 1rem 0 0; }
+
+    /* Módulos */
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 2rem 2rem 4rem;
+      max-width: 1000px;
+      margin: 0 auto;
+      scroll-margin-top: 90px;
+    }
+    .card {
+      background: var(--surface-color);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      flex: 1;
+      text-align: center;
+    }
+    .card h3 { margin-top: 0; }
+    .card p { color: var(--text-muted); margin-bottom: 0; }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      background-color: var(--surface-color);
+      border-top: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    footer p { margin: 0.25rem 0; }
+
+    @media (max-width: 720px) {
+      .navbar { padding: 0.75rem 1rem; }
+      .nav-links { display: none; }
+      .hero { padding: 3rem 1.25rem 2rem; }
+      .hero h1 { font-size: 1.9rem; }
+      .features { flex-direction: column; padding: 1rem 1.25rem 3rem; }
+      .chat { padding: 0 1rem 2rem; }
+    }
+    @media (max-width: 420px) {
+      form { flex-direction: column; }
+      .brand-logo { height: 32px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="#inicio" aria-label="TecBot Académico, inicio">
+      <svg class="brand-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" role="img" aria-labelledby="logo-title">
+        <title id="logo-title">TecBot Académico</title>
+        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10 14h28a6 6 0 0 1 6 6v10a6 6 0 0 1-6 6H26l-8 8v-8h-8a6 6 0 0 1-6-6V20a6 6 0 0 1 6-6z" fill="#0F172A" stroke="#06B6D4" stroke-width="2.2"/>
+          <rect x="18" y="22" width="12" height="10" rx="2" fill="#0B1220" stroke="#10B981" stroke-width="1.8"/>
+          <path d="M24 19v3M24 32v3M15 27h3M30 27h3" stroke="#06B6D4" stroke-width="2"/>
+          <circle cx="24" cy="27" r="1.6" fill="#10B981"/>
+        </g>
+        <g font-family="Inter, Segoe UI, Arial, sans-serif">
+          <text x="56" y="34" font-size="22" font-weight="700" fill="#E6EDF3">TecBot</text>
+          <text x="132" y="34" font-size="22" font-weight="500" fill="#10B981">Académico</text>
+        </g>
+      </svg>
+    </a>
+    <nav class="nav-links" aria-label="Secciones">
+      <a href="#inicio">Inicio</a>
+      <a href="#chat">Asistente</a>
+      <a href="#modulos">Módulos</a>
+    </nav>
+    <a href="#chat" class="cta-button">Probar Bot</a>
+  </header>
+
+  <main>
+    <section id="inicio" class="hero">
+      <h1>Tu asistente inteligente para la <span>comunidad académica</span></h1>
+      <p>Resuelve dudas sobre servicio social, residencias, titulación y acreditación utilizando documentos institucionales de demostración.</p>
+      <a href="#chat" class="btn-primary">Hacer una pregunta</a>
+    </section>
+
+    <section id="chat" class="chat" aria-labelledby="chat-titulo">
+      <div class="chat-card">
+        <h2 id="chat-titulo">Pregúntale a TecBot</h2>
+        <p class="aviso" role="note">
+          <strong>Material didáctico:</strong> las respuestas provienen de documentos ficticios de
+          demostración y no constituyen normativa oficial.
+        </p>
+
+        <form id="formulario">
+          <label for="pregunta" style="position:absolute;left:-9999px">Pregunta</label>
+          <input id="pregunta" maxlength="1000" autocomplete="off"
+                 placeholder="Ej. ¿Qué necesito para el servicio social?">
+          <button id="enviar" class="btn-enviar" type="submit">Preguntar</button>
+        </form>
+
+        <div class="ejemplos" aria-label="Preguntas de ejemplo">
+          <button type="button">¿Qué necesito para el servicio social?</button>
+          <button type="button">¿Cómo registro mi proyecto de residencias?</button>
+          <button type="button">¿Cuáles son las modalidades de titulación?</button>
+          <button type="button">¿Puedo acreditar una materia reprobada?</button>
+          <button type="button">¿Cuál es el horario de la cafetería?</button>
+        </div>
+
+        <p id="estado" class="estado" aria-live="polite"></p>
+        <section id="resultado" aria-live="polite"></section>
+      </div>
+    </section>
+
+    <section id="modulos" class="features" aria-label="Módulos">
+      <div class="card">
+        <h3>📋 Residencias y Servicio</h3>
+        <p>Consulta requisitos, formatos y pasos de tu proceso de vinculación profesional.</p>
+      </div>
+      <div class="card">
+        <h3>🎓 Titulación y Acreditación</h3>
+        <p>Revisa las modalidades de titulación y las opciones de acreditación del corpus de ejemplo.</p>
+      </div>
+      <div class="card">
+        <h3>⚡ Consultas con IA</h3>
+        <p>Búsqueda semántica con ChromaDB y respuestas redactadas por un modelo local, siempre con sus fuentes.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 TecBot Académico · Proyecto didáctico del curso <em>Creación de software con Agentes de IA</em>.</p>
+    <p>Los documentos son ficticios y no sustituyen la orientación oficial.</p>
+  </footer>
+
+  <script>
+    const formulario = document.getElementById("formulario");
+    const campo = document.getElementById("pregunta");
+    const boton = document.getElementById("enviar");
+    const estado = document.getElementById("estado");
+    const resultado = document.getElementById("resultado");
+
+    // Todo el texto del servidor se inserta con textContent (nunca como HTML).
+    function el(tag, texto, clase) {
+      const nodo = document.createElement(tag);
+      if (texto) nodo.textContent = texto;
+      if (clase) nodo.className = clase;
+      return nodo;
+    }
+
+    // Convierte **negritas** y [documento.md] en elementos, sin usar innerHTML.
+    function formatearRespuesta(texto) {
+      const p = el("p", "", "respuesta");
+      texto = texto.replace(/^\s*[*-]\s+/gm, "• ");  // viñetas de Markdown
+      const partes = texto.split(/(\*\*[^*]+\*\*|\[[\w.-]+\.md\])/g);
+      for (const parte of partes) {
+        if (!parte) continue;
+        if (parte.startsWith("**") && parte.endsWith("**")) {
+          p.append(el("strong", parte.slice(2, -2)));
+        } else if (/^\[[\w.-]+\.md\]$/.test(parte)) {
+          p.append(el("span", parte.slice(1, -1), "cita"));
+        } else {
+          p.append(document.createTextNode(parte));
+        }
+      }
+      return p;
+    }
+
+    function mostrar(datos) {
+      resultado.replaceChildren();
+      const tarjeta = el("div", "", "resultado" + (datos.fuentes.length ? "" : " sin-fuentes"));
+      tarjeta.append(formatearRespuesta(datos.respuesta));
+
+      if (datos.fuentes.length) {
+        tarjeta.append(el("h3", "Fuentes"));
+        const lista = el("ul");
+        for (const fuente of datos.fuentes) {
+          const detalle = el("details");
+          detalle.append(el("summary", fuente.documento), el("p", fuente.fragmento, "fragmento"));
+          const item = el("li");
+          item.append(detalle);
+          lista.append(item);
+        }
+        tarjeta.append(lista);
+      }
+
+      tarjeta.append(el("p", datos.advertencia, "advertencia"));
+      resultado.append(tarjeta);
+    }
+
+    async function consultar(pregunta) {
+      const inicio = Date.now();
+      const mensaje = "Buscando en los documentos y redactando la respuesta";
+      estado.className = "estado";
+      estado.textContent = mensaje + "...";
+      const reloj = setInterval(() => {
+        const s = Math.round((Date.now() - inicio) / 1000);
+        estado.textContent = `${mensaje}... ${s} s` +
+          (s >= 8 ? " (la primera pregunta tarda más mientras se carga el modelo)" : "");
+      }, 1000);
+
+      resultado.replaceChildren();
+      boton.disabled = true;
+      try {
+        const respuesta = await fetch("/consultas", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ pregunta }),
+        });
+        if (respuesta.status === 422) {
+          throw new Error("La pregunta no puede estar vacía ni superar 1,000 caracteres.");
+        }
+        if (!respuesta.ok) {
+          throw new Error(`Error del servidor (${respuesta.status}). Intenta de nuevo.`);
+        }
+        mostrar(await respuesta.json());
+        estado.textContent = "";
+      } catch (error) {
+        estado.className = "error";
+        estado.textContent = error.message === "Failed to fetch"
+          ? "No se pudo conectar con la API. ¿Está encendido uvicorn?"
+          : error.message;
+      } finally {
+        clearInterval(reloj);
+        boton.disabled = false;
+      }
+    }
+
+    formulario.addEventListener("submit", (evento) => {
+      evento.preventDefault();
+      const pregunta = campo.value.trim();
+      if (!pregunta) {
+        estado.className = "error";
+        estado.textContent = "Escribe una pregunta.";
+        return;
+      }
+      consultar(pregunta);
+    });
+
+    document.querySelectorAll(".ejemplos button").forEach((b) =>
+      b.addEventListener("click", () => {
+        campo.value = b.textContent;
+        consultar(b.textContent);
+      })
+    );
+  </script>
+</body>
+</html>

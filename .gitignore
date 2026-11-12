@@ -13,3 +13,6 @@ dist/
 .vscode/
 .idea/
 .DS_Store
+
+# ChromaDB (índice generado con scripts/indexar.py; no se versiona)
+chroma_db/

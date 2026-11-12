@@ -1,9 +1,22 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
-class ChatRequest(BaseModel):
-    message: str = Field(min_length=1, max_length=2000)
+class ConsultaRequest(BaseModel):
+    model_config = ConfigDict(str_strip_whitespace=True)
+
+    pregunta: str = Field(min_length=1, max_length=1000)
 
 
-class ChatResponse(BaseModel):
-    reply: str
+class Fuente(BaseModel):
+    documento: str
+    fragmento: str
+
+
+class ConsultaResponse(BaseModel):
+    respuesta: str
+    fuentes: list[Fuente]
+    advertencia: str
+
+
+class SaludResponse(BaseModel):
+    estado: str

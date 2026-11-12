@@ -1,3 +1,7 @@
 fastapi>=0.115
 uvicorn[standard]>=0.34
 pydantic-settings>=2.7
+# Búsqueda semántica (Día 3). Usa el modelo de embeddings local por defecto.
+chromadb>=1.0
+# Generación de respuestas con modelo local (Día 3 · Paso 4).
+ollama>=0.4

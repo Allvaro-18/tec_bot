@@ -19,3 +19,54 @@ input {
   flex: 1;
   padding: 0.5rem;
 }
+
+/* --- TecBot Académico: consulta con fuentes --- */
+.aviso {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.resultado {
+  margin-top: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.resultado h2 {
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.fragmento {
+  white-space: pre-wrap;
+  font-size: 0.85rem;
+  color: #4b5563;
+}
+
+.advertencia {
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+@media (max-width: 400px) {
+  form {
+    flex-direction: column;
+  }
+}
